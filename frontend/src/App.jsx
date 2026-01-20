@@ -368,6 +368,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [authErr, setAuthErr] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   // saved locations
   const [saved, setSaved] = useState([]);
@@ -781,6 +782,54 @@ export default function App() {
     }
   }
 
+  useEffect(() => {
+    if (!googleClientId || token) return;
+    if (document.querySelector("script[data-google-auth]")) return;
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.dataset.googleAuth = "true";
+    document.body.appendChild(script);
+    return () => {
+      script.remove();
+    };
+  }, [googleClientId, token]);
+
+  useEffect(() => {
+    if (!googleClientId || token) return;
+    const target = document.getElementById("google-signin-btn");
+    if (!window.google || !target) return;
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: async (response) => {
+        setAuthErr("");
+        setAuthLoading(true);
+        try {
+          const res = await fetch(`${API_BASE}/auth/google`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ credential: response.credential }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json?.detail || "Google auth failed");
+          setToken(json.access);
+          setTokenState(json.access);
+        } catch (e) {
+          setAuthErr(e.message);
+        } finally {
+          setAuthLoading(false);
+        }
+      },
+    });
+    window.google.accounts.id.renderButton(target, {
+      theme: theme === "dark" ? "filled_black" : "outline",
+      size: "large",
+      shape: "pill",
+      text: "continue_with",
+    });
+  }, [googleClientId, token, theme]);
+
   function logout() {
     clearToken();
     setTokenState(null);
@@ -1110,6 +1159,12 @@ export default function App() {
               {authErr && (
                 <div className="md:col-span-2 alert-card mt-2">
                   {authErr}
+                </div>
+              )}
+
+              {googleClientId && (
+                <div className="md:col-span-2 google-auth">
+                  <div id="google-signin-btn" />
                 </div>
               )}
             </form>
