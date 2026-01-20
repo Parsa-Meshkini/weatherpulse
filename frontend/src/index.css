@@ -215,6 +215,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    justify-content: center;
   }
 
   .btn-icon {
@@ -278,6 +279,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    justify-content: center;
   }
 
   .primary-btn:hover {
@@ -390,6 +392,7 @@
     border: 1px solid var(--wp-border);
     background: rgba(255, 255, 255, 0.3);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: grab;
   }
 
   .chart-wrap {
@@ -397,11 +400,85 @@
     gap: 12px;
   }
 
+  .chart-wrap-compact {
+    margin-top: 8px;
+  }
+
+  .weather-icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hourly-icons {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .hourly-icon-item {
+    display: grid;
+    gap: 6px;
+    place-items: center;
+    border-radius: 12px;
+    border: 1px solid var(--wp-border);
+    padding: 8px 6px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .hourly-icon-item {
+    background: rgba(15, 23, 42, 0.45);
+  }
+
+  .footer-card {
+    border-radius: 18px;
+    border: 1px solid var(--wp-border);
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.35);
+    text-align: center;
+  }
+
+  .dark .footer-card {
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  .footer-title {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--wp-muted);
+  }
+
+  .footer-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wp-text);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--wp-border);
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .dark .footer-link {
+    background: rgba(15, 23, 42, 0.55);
+  }
+
   .chart-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     align-items: baseline;
+  }
+
+  .chart-meta-compact {
+    margin-bottom: 8px;
   }
 
   .chart-time {
@@ -424,6 +501,10 @@
   .hourly-chart {
     width: 100%;
     height: auto;
+  }
+
+  .hourly-chart-compact {
+    margin-top: 8px;
   }
 
   .chart-line {
@@ -465,6 +546,52 @@
   .aqi-tip-detail {
     margin-top: 6px;
     font-size: 14px;
+    color: var(--wp-subtext);
+  }
+
+  .news-grid {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .news-card {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid var(--wp-border);
+    background: rgba(255, 255, 255, 0.35);
+    text-decoration: none;
+    color: var(--wp-text);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .news-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+  }
+
+  .news-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .news-body {
+    display: grid;
+    gap: 6px;
+  }
+
+  .news-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .news-meta {
+    font-size: 12px;
     color: var(--wp-subtext);
   }
 
@@ -604,6 +731,11 @@
 
   .dark .saved-row {
     background: rgba(15, 23, 42, 0.45);
+  }
+
+  .saved-row.is-dragging {
+    opacity: 0.6;
+    cursor: grabbing;
   }
 
   .alert-item {
