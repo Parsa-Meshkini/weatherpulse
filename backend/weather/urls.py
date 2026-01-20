@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import alerts, weather_by_city, register, me, saved_locations, delete_saved_location, aqi, alerts, preferences, alert_subscriptions, delete_alert_subscription
+from .views import alerts, weather_by_city, register, me, saved_locations, delete_saved_location, aqi, alerts, preferences, alert_subscriptions, delete_alert_subscription, news
 from .auth import EmailOrUsernameTokenView
 
 
@@ -17,5 +17,6 @@ urlpatterns = [
     path("alert-subscriptions/<int:pk>", delete_alert_subscription),
     path("aqi", aqi),
     path("alerts", alerts),
+    path("news", news),
     path("preferences", preferences),
 ]
