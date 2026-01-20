@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.conf import settings
 import requests
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import SavedLocation, UserPreference, AlertSubscription
 from .serializers import RegisterSerializer, SavedLocationSerializer, AlertSubscriptionSerializer
@@ -137,6 +138,63 @@ def alert_subscriptions(request):
 def delete_alert_subscription(request, pk: int):
     AlertSubscription.objects.filter(user=request.user, pk=pk).delete()
     return Response(status=204)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def google_auth(request):
+    token = request.data.get("credential") or request.data.get("id_token")
+    if not token:
+        return Response({"detail": "Missing Google credential"}, status=status.HTTP_400_BAD_REQUEST)
+    if not settings.GOOGLE_CLIENT_ID:
+        return Response({"detail": "Google client is not configured"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    try:
+        res = requests.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"id_token": token},
+            timeout=10,
+        )
+        res.raise_for_status()
+        payload = res.json()
+    except requests.RequestException:
+        return Response({"detail": "Google token verification failed"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if payload.get("aud") != settings.GOOGLE_CLIENT_ID:
+        return Response({"detail": "Invalid Google audience"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    email = payload.get("email")
+    if not email:
+        return Response({"detail": "Google account email not available"}, status=status.HTTP_400_BAD_REQUEST)
+
+    name = payload.get("name") or ""
+    first_name = payload.get("given_name") or (name.split(" ")[0] if name else "")
+    last_name = payload.get("family_name") or (" ".join(name.split(" ")[1:]) if name else "")
+
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        base_username = email.split("@")[0]
+        username = base_username
+        suffix = 1
+        while User.objects.filter(username__iexact=username).exists():
+            username = f"{base_username}{suffix}"
+            suffix += 1
+        user = User.objects.create(
+            username=username,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        user.set_unusable_password()
+        user.save()
+
+    refresh = RefreshToken.for_user(user)
+    return Response(
+        {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user": {"id": user.id, "username": user.username, "email": user.email},
+        }
+    )
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
