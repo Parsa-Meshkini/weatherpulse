@@ -30,15 +30,15 @@ function Stat({ label, value, icon }) {
   );
 }
 
-function HourlyChart({ times, temps, precip, formatTemp }) {
+function HourlyChart({ times, temps, precip, formatTemp, compact = false }) {
   const [hoverIndex, setHoverIndex] = useState(0);
   const count = temps.length;
   if (!count) return null;
 
-  const width = 640;
-  const height = 180;
-  const paddingX = 28;
-  const paddingY = 26;
+  const width = compact ? 320 : 640;
+  const height = compact ? 120 : 180;
+  const paddingX = compact ? 20 : 28;
+  const paddingY = compact ? 20 : 26;
   const min = Math.min(...temps);
   const max = Math.max(...temps);
   const range = max - min || 1;
@@ -68,16 +68,27 @@ function HourlyChart({ times, temps, precip, formatTemp }) {
   const activePrecip = precip?.[hoverIndex] ?? 0;
 
   return (
-    <div className="soft-card p-5 chart-wrap">
-      <div className="section-title">Hourly Trend</div>
-      <div className="chart-meta">
-        <div className="chart-time">{activeTime.replace("T", " ")}</div>
-        <div className="chart-temp">{formatTemp(activeTemp)}</div>
-        <div className="chart-rain">Rain: {activePrecip}%</div>
-      </div>
+    <div className={`soft-card p-5 chart-wrap ${compact ? "chart-wrap-compact" : ""}`}>
+      {!compact && (
+        <>
+          <div className="section-title">Hourly Trend</div>
+          <div className="chart-meta">
+            <div className="chart-time">{activeTime.replace("T", " ")}</div>
+            <div className="chart-temp">{formatTemp(activeTemp)}</div>
+            <div className="chart-rain">Rain: {activePrecip}%</div>
+          </div>
+        </>
+      )}
+      {compact && (
+        <div className="chart-meta chart-meta-compact">
+          <div className="chart-time">{activeTime.replace("T", " ")}</div>
+          <div className="chart-temp">{formatTemp(activeTemp)}</div>
+          <div className="chart-rain">Rain: {activePrecip}%</div>
+        </div>
+      )}
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="hourly-chart"
+        className={`hourly-chart ${compact ? "hourly-chart-compact" : ""}`}
         onMouseMove={onMove}
         onMouseLeave={() => setHoverIndex(0)}
         role="img"
@@ -109,6 +120,91 @@ function HourlyChart({ times, temps, precip, formatTemp }) {
         />
       </svg>
     </div>
+  );
+}
+
+function getWeatherIconKind(code) {
+  if (code === null || code === undefined) return "clear";
+  if (code === 0) return "clear";
+  if ([1, 2].includes(code)) return "partly";
+  if (code === 3) return "cloudy";
+  if ([45, 48].includes(code)) return "fog";
+  if ([51, 53, 55, 56, 57].includes(code)) return "drizzle";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "rain";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "snow";
+  if ([95, 96, 99].includes(code)) return "thunder";
+  return "cloudy";
+}
+
+function WeatherIcon({ code, size = 20 }) {
+  const kind = getWeatherIconKind(code);
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    className: "weather-icon",
+    "aria-hidden": "true",
+  };
+
+  if (kind === "clear") {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.4 5.4l2.1 2.1M16.5 16.5l2.1 2.1M5.4 18.6l2.1-2.1M16.5 7.5l2.1-2.1" />
+      </svg>
+    );
+  }
+
+  if (kind === "partly") {
+    return (
+      <svg {...common}>
+        <circle cx="8" cy="9" r="3.5" />
+        <path d="M6 14.5h9.2a3.3 3.3 0 0 1 0 6.6H6a3.8 3.8 0 1 1 0-7.6" />
+      </svg>
+    );
+  }
+
+  if (kind === "rain" || kind === "drizzle") {
+    return (
+      <svg {...common}>
+        <path d="M6 14.5h9.2a3.3 3.3 0 0 1 0 6.6H6a3.8 3.8 0 1 1 0-7.6" />
+        <path d="M8 21l-1.2 2M12 21l-1.2 2M16 21l-1.2 2" />
+      </svg>
+    );
+  }
+
+  if (kind === "snow") {
+    return (
+      <svg {...common}>
+        <path d="M6 14.5h9.2a3.3 3.3 0 0 1 0 6.6H6a3.8 3.8 0 1 1 0-7.6" />
+        <circle cx="8" cy="20.5" r="1" />
+        <circle cx="12" cy="21.5" r="1" />
+        <circle cx="16" cy="20.5" r="1" />
+      </svg>
+    );
+  }
+
+  if (kind === "thunder") {
+    return (
+      <svg {...common}>
+        <path d="M6 14.5h9.2a3.3 3.3 0 0 1 0 6.6H6a3.8 3.8 0 1 1 0-7.6" />
+        <path d="M11 18l-2 4h2l-1 3 4-5h-2l1-2z" />
+      </svg>
+    );
+  }
+
+  if (kind === "fog") {
+    return (
+      <svg {...common}>
+        <path d="M4 12h16M6 16h12M8 20h8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M6 14.5h9.2a3.3 3.3 0 0 1 0 6.6H6a3.8 3.8 0 1 1 0-7.6" />
+    </svg>
   );
 }
 
@@ -258,6 +354,9 @@ export default function App() {
   const [alertsData, setAlertsData] = useState([]);
   const [alertsErr, setAlertsErr] = useState("");
   const [alertsNotice, setAlertsNotice] = useState("");
+  const [newsItems, setNewsItems] = useState([]);
+  const [newsErr, setNewsErr] = useState("");
+  const [newsLoading, setNewsLoading] = useState(false);
 
   // auth
   const [token, setTokenState] = useState(getToken());
@@ -278,6 +377,7 @@ export default function App() {
   const [compareData, setCompareData] = useState({});
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareErr, setCompareErr] = useState("");
+  const [draggingId, setDraggingId] = useState(null);
   const [alertSubs, setAlertSubs] = useState([]);
   const [alertSubsLoading, setAlertSubsLoading] = useState(false);
   const [alertSubsErr, setAlertSubsErr] = useState("");
@@ -572,6 +672,29 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    setNewsLoading(true);
+    setNewsErr("");
+    fetchJson(`${API_BASE}/news`)
+      .then((json) => {
+        if (!active) return;
+        setNewsItems(json.articles || []);
+      })
+      .catch((e) => {
+        if (!active) return;
+        setNewsErr(e.message);
+        setNewsItems([]);
+      })
+      .finally(() => {
+        if (!active) return;
+        setNewsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (token) loadMeAndSaved(token);
     else {
       setMe(null);
@@ -756,6 +879,19 @@ export default function App() {
       if (nextIdx < 0 || nextIdx >= prev.length) return prev;
       const copy = [...prev];
       [copy[idx], copy[nextIdx]] = [copy[nextIdx], copy[idx]];
+      return copy;
+    });
+  }
+
+  function moveSavedTo(id, targetId) {
+    if (id === targetId) return;
+    setSaved((prev) => {
+      const from = prev.findIndex((x) => x.id === id);
+      const to = prev.findIndex((x) => x.id === targetId);
+      if (from < 0 || to < 0) return prev;
+      const copy = [...prev];
+      const [item] = copy.splice(from, 1);
+      copy.splice(to, 0, item);
       return copy;
     });
   }
@@ -1215,6 +1351,14 @@ export default function App() {
                     precip={hourly.precipitation_probability?.slice(0, 12)}
                     formatTemp={formatTemp}
                   />
+                  <div className="hourly-icons">
+                    {hourly.time.slice(0, 12).map((t, i) => (
+                      <div key={t} className="hourly-icon-item">
+                        <WeatherIcon code={hourly.weather_code?.[i]} />
+                        <div className="text-xs text-subtle">{t.replace("T", " ").slice(11, 16)}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -1225,6 +1369,7 @@ export default function App() {
                     {daily.time.slice(0, 7).map((d, i) => (
                       <div key={d} className="daily-row">
                         <div className="text-subtle">{d}</div>
+                        <WeatherIcon code={daily.weather_code?.[i]} />
                         {formatTemp(daily.temperature_2m_min[i])} →{" "}
                         <span className="font-semibold">{formatTemp(daily.temperature_2m_max[i])}</span>
                         <div className="text-subtle">
@@ -1258,7 +1403,18 @@ export default function App() {
                 <div className="text-sm text-subtle">No saved locations yet.</div>
               ) : (
                 saved.map((loc) => (
-                  <div key={loc.id} className="saved-row">
+                  <div
+                    key={loc.id}
+                    className={`saved-row ${draggingId === loc.id ? "is-dragging" : ""}`}
+                    draggable
+                    onDragStart={() => setDraggingId(loc.id)}
+                    onDragEnd={() => setDraggingId(null)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => {
+                      if (draggingId !== null) moveSavedTo(draggingId, loc.id);
+                      setDraggingId(null);
+                    }}
+                  >
                     <button
                       onClick={() => loadSavedLocation(loc)}
                       className="text-left flex-1"
@@ -1343,6 +1499,15 @@ export default function App() {
                       <div className="text-subtle text-xs">
                         Local time: {formatLocalTime(entry.loc.timezone) || "—"}
                       </div>
+                      {entry.data?.forecast?.hourly?.time && (
+                        <HourlyChart
+                          times={entry.data.forecast.hourly.time.slice(0, 6)}
+                          temps={entry.data.forecast.hourly.temperature_2m.slice(0, 6)}
+                          precip={entry.data.forecast.hourly.precipitation_probability?.slice(0, 6)}
+                          formatTemp={formatTemp}
+                          compact
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -1350,6 +1515,38 @@ export default function App() {
             </div>
           )}
         </div>
+
+        <div className="glass-card p-5 sm:p-6 float-in" style={{ animationDelay: "140ms" }}>
+          <div className="section-title">Global Weather News</div>
+          {newsLoading && <div className="text-sm text-subtle mt-2">Loading news...</div>}
+          {newsErr && <div className="alert-card mt-2">{newsErr}</div>}
+          {!newsLoading && !newsErr && (
+            <div className="news-grid">
+              {newsItems.length === 0 ? (
+                <div className="text-sm text-subtle">No news found.</div>
+              ) : (
+                newsItems.map((item, idx) => (
+                  <a key={idx} href={item.url} target="_blank" rel="noreferrer" className="news-card">
+                    {item.image && <img src={item.image} alt="" className="news-image" />}
+                    <div className="news-body">
+                      <div className="news-title">{item.title}</div>
+                      <div className="news-meta">
+                        {item.source || "News"} • {item.publishedAt?.replace("T", " ").slice(0, 16) || ""}
+                      </div>
+                    </div>
+                  </a>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+
+        <footer className="footer-card">
+          <div className="footer-title">Created by Parsa Meshkini</div>
+          <a href="https://parsameshkini.com" target="_blank" rel="noreferrer" className="footer-link">
+            parsameshkini.com
+          </a>
+        </footer>
       </div>
     </div>
   );
