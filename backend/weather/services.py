@@ -29,61 +29,67 @@ def geocode_city(city: str):
     }
 
 def geocode_address(query: str):
-    r = requests.get(
-        NOMINATIM_URL,
-        params={"q": query, "format": "json", "limit": 1, "addressdetails": 1},
-        headers={"User-Agent": "WeatherPulse/1.0"},
-        timeout=10,
-    )
-    r.raise_for_status()
-    results = r.json() or []
-    if not results:
+    try:
+        r = requests.get(
+            NOMINATIM_URL,
+            params={"q": query, "format": "json", "limit": 1, "addressdetails": 1},
+            headers={"User-Agent": "WeatherPulse/1.0"},
+            timeout=10,
+        )
+        r.raise_for_status()
+        results = r.json() or []
+        if not results:
+            return None
+        top = results[0]
+        address = top.get("address") or {}
+        name = address.get("attraction") or address.get("amenity") or address.get("road") or address.get("suburb")
+        city = address.get("city") or address.get("town") or address.get("village")
+        region = address.get("state") or address.get("province") or ""
+        country = address.get("country") or ""
+        return {
+            "name": name or city or top.get("display_name", "").split(",")[0] or "Current location",
+            "country": country,
+            "admin1": region,
+            "lat": float(top.get("lat")),
+            "lon": float(top.get("lon")),
+            "timezone": "auto",
+        }
+    except Exception:
         return None
-    top = results[0]
-    address = top.get("address") or {}
-    name = address.get("attraction") or address.get("amenity") or address.get("road") or address.get("suburb")
-    city = address.get("city") or address.get("town") or address.get("village")
-    region = address.get("state") or address.get("province") or ""
-    country = address.get("country") or ""
-    return {
-        "name": name or city or top.get("display_name", "").split(",")[0] or "Current location",
-        "country": country,
-        "admin1": region,
-        "lat": float(top.get("lat")),
-        "lon": float(top.get("lon")),
-        "timezone": "auto",
-    }
 
 def reverse_geocode(lat: float, lon: float):
-    r = requests.get(
-        REVERSE_GEOCODE_URL,
-        params={"latitude": lat, "longitude": lon, "language": "en", "format": "json"},
-        timeout=10,
-    )
-    r.raise_for_status()
-    data = r.json()
-    results = data.get("results") or []
-    if not results:
-        return None
+    try:
+        r = requests.get(
+            REVERSE_GEOCODE_URL,
+            params={"latitude": lat, "longitude": lon, "language": "en", "format": "json"},
+            timeout=10,
+        )
+        r.raise_for_status()
+        data = r.json()
+        results = data.get("results") or []
+        if not results:
+            return None
 
-    top = results[0]
-    name = (
-        top.get("name")
-        or top.get("city")
-        or top.get("town")
-        or top.get("village")
-        or top.get("admin2")
-        or top.get("admin1")
-        or "Current location"
-    )
-    return {
-        "name": name,
-        "country": top.get("country") or "",
-        "admin1": top.get("admin1") or "",
-        "lat": top.get("latitude") or lat,
-        "lon": top.get("longitude") or lon,
-        "timezone": top.get("timezone") or "auto",
-    }
+        top = results[0]
+        name = (
+            top.get("name")
+            or top.get("city")
+            or top.get("town")
+            or top.get("village")
+            or top.get("admin2")
+            or top.get("admin1")
+            or "Current location"
+        )
+        return {
+            "name": name,
+            "country": top.get("country") or "",
+            "admin1": top.get("admin1") or "",
+            "lat": top.get("latitude") or lat,
+            "lon": top.get("longitude") or lon,
+            "timezone": top.get("timezone") or "auto",
+        }
+    except Exception:
+        return None
 
 def fetch_forecast(lat: float, lon: float, timezone: str = "auto"):
     params = {
