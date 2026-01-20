@@ -123,6 +123,8 @@ ALERTS_MIN_INTERVAL_MINUTES = int(os.getenv("ALERTS_MIN_INTERVAL_MINUTES", "30")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY", "")
 NEWS_QUERY = os.getenv("NEWS_QUERY", "weather OR climate OR storm OR wildfire")
 NEWS_PAGE_SIZE = int(os.getenv("NEWS_PAGE_SIZE", "8"))
+GOOGLE_CLIENT_ID = os.getenv("CLIENT_ID_GOOGLE", os.getenv("GOOGLE_CLIENT_ID", ""))
+GOOGLE_CLIENT_SECRET = os.getenv("CLIENT_SECRET_GOOGLE", os.getenv("GOOGLE_CLIENT_SECRET", ""))
 
 # Redis Cache Configuration
 CACHES = {
