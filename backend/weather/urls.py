@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import alerts, weather_by_city, register, me, saved_locations, delete_saved_location, aqi, alerts, preferences, alert_subscriptions, delete_alert_subscription, news
+from .views import alerts, weather_by_city, register, me, saved_locations, delete_saved_location, aqi, alerts, preferences, alert_subscriptions, delete_alert_subscription, news, google_auth
 from .auth import EmailOrUsernameTokenView
 
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path("auth/register", register),
     path("auth/token", EmailOrUsernameTokenView.as_view(), name="token_obtain_pair"),
     path("auth/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/google", google_auth),
     path("me", me),
     path("saved-locations", saved_locations),
     path("saved-locations/<int:pk>", delete_saved_location),
