@@ -11,6 +11,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    env_file:
+      - ./.env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
       - REDIS_URL=redis://redis:6379/1
@@ -25,6 +27,8 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    env_file:
+      - ./.env
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
