@@ -1,0 +1,111 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1020"/>
+      <stop offset="0.45" stop-color="#1A2A6C"/>
+      <stop offset="1" stop-color="#6A11CB"/>
+    </linearGradient>
+
+    <!-- Soft glow -->
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(940 190) rotate(90) scale(260 260)">
+      <stop stop-color="#FFE08A" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFE08A" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Cloud gradient -->
+    <linearGradient id="cloud" x1="280" y1="420" x2="980" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#D7E7FF" stop-opacity="0.72"/>
+    </linearGradient>
+
+    <!-- Blur for clouds -->
+    <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+
+    <!-- Tiny stars -->
+    <pattern id="stars" width="120" height="120" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="18" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+      <circle cx="92" cy="30" r="1.2" fill="#FFFFFF" opacity="0.45"/>
+      <circle cx="48" cy="86" r="1.3" fill="#FFFFFF" opacity="0.35"/>
+      <circle cx="18" cy="96" r="1.0" fill="#FFFFFF" opacity="0.3"/>
+      <circle cx="110" cy="102" r="1.1" fill="#FFFFFF" opacity="0.4"/>
+    </pattern>
+
+    <!-- Title shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" rx="42" fill="url(#bg)"/>
+  <rect width="1280" height="640" rx="42" fill="url(#stars)" opacity="0.35"/>
+
+  <!-- Glow "sun" -->
+  <circle cx="940" cy="190" r="260" fill="url(#glow)"/>
+
+  <!-- Subtle top wave -->
+  <path d="M0 170C160 120 290 120 470 160C650 205 790 215 980 170C1120 136 1210 120 1280 135V0H0V170Z"
+        fill="#FFFFFF" opacity="0.06"/>
+
+  <!-- Big clouds (blurred) -->
+  <g filter="url(#softBlur)" opacity="0.95">
+    <path d="M310 470c0-42 34-76 76-76 12 0 23 3 33 8 14-30 45-50 82-50 48 0 88 35 95 81 7-3 15-5 24-5 33 0 60 27 60 60 0 33-27 60-60 60H395c-47 0-85-38-85-85Z"
+          fill="url(#cloud)"/>
+    <path d="M650 500c0-34 28-62 62-62 10 0 19 2 28 6 12-25 38-42 68-42 40 0 72 29 78 67 6-2 12-4 20-4 27 0 48 22 48 49 0 27-21 49-48 49H735c-47 0-85-38-85-85Z"
+          fill="url(#cloud)" opacity="0.92"/>
+  </g>
+
+  <!-- Logo mark (left) -->
+  <g transform="translate(120 150)">
+    <circle cx="72" cy="72" r="62" fill="#FFFFFF" opacity="0.12"/>
+    <circle cx="72" cy="72" r="62" stroke="#FFFFFF" opacity="0.32" stroke-width="2"/>
+    <!-- Sun -->
+    <circle cx="90" cy="56" r="16" fill="#FFE08A" opacity="0.95"/>
+    <!-- Cloud -->
+    <path d="M48 92c0-12 10-22 22-22 4 0 7 1 10 2 4-9 13-15 24-15 14 0 25 10 27 23 2-1 4-1 7-1 10 0 18 8 18 18s-8 18-18 18H70c-12 0-22-10-22-22Z"
+          fill="#EAF4FF" opacity="0.98"/>
+    <!-- Pulse line -->
+    <path d="M28 110h22l8-14 10 26 12-18h38" stroke="#9FE7FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  </g>
+
+  <!-- Title -->
+  <g filter="url(#shadow)">
+    <text x="240" y="260" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial"
+          font-size="72" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">
+      WeatherPulse
+    </text>
+    <text x="240" y="312" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial"
+          font-size="22" font-weight="500" fill="#D7E7FF" opacity="0.9">
+      Fast forecasts • Clean UI • Real-time conditions
+    </text>
+  </g>
+
+  <!-- Feature pills -->
+  <g opacity="0.95">
+    <g transform="translate(240 350)">
+      <rect x="0" y="0" rx="18" ry="18" width="180" height="42" fill="#FFFFFF" opacity="0.12"/>
+      <text x="18" y="28" font-family="Inter, ui-sans-serif, system-ui" font-size="16" fill="#FFFFFF" opacity="0.95">
+        Hourly + Daily
+      </text>
+    </g>
+    <g transform="translate(430 350)">
+      <rect x="0" y="0" rx="18" ry="18" width="170" height="42" fill="#FFFFFF" opacity="0.12"/>
+      <text x="18" y="28" font-family="Inter, ui-sans-serif, system-ui" font-size="16" fill="#FFFFFF" opacity="0.95">
+        UV + AQI
+      </text>
+    </g>
+    <g transform="translate(610 350)">
+      <rect x="0" y="0" rx="18" ry="18" width="210" height="42" fill="#FFFFFF" opacity="0.12"/>
+      <text x="18" y="28" font-family="Inter, ui-sans-serif, system-ui" font-size="16" fill="#FFFFFF" opacity="0.95">
+        Location Search
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom fade -->
+  <rect y="440" width="1280" height="200" fill="#000000" opacity="0.10"/>
+</svg>

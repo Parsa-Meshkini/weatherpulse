@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="80" y1="70" x2="430" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A2A6C"/>
+      <stop offset="0.55" stop-color="#2F6BFF"/>
+      <stop offset="1" stop-color="#6A11CB"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(340 160) rotate(90) scale(120 120)">
+      <stop stop-color="#FFE08A" stop-opacity="1"/>
+      <stop offset="1" stop-color="#FFE08A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="36" y="36" width="440" height="440" rx="120" fill="url(#g)"/>
+  <circle cx="340" cy="160" r="120" fill="url(#sunGlow)" opacity="0.9"/>
+  <circle cx="338" cy="154" r="34" fill="#FFE08A" opacity="0.95"/>
+
+  <!-- Cloud -->
+  <path d="M148 304c0-36 29-65 65-65 12 0 23 3 33 8 13-27 41-46 74-46 44 0 80 32 87 75 6-2 13-4 22-4 29 0 53 24 53 53s-24 53-53 53H213c-36 0-65-29-65-65Z"
+        fill="#EAF4FF" opacity="0.98"/>
+
+  <!-- Pulse line -->
+  <path d="M132 332h88l22-44 30 92 32-64h96"
+        stroke="#9FE7FF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+</svg>
