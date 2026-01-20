@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.conf import settings
+import requests
 
 from .models import SavedLocation, UserPreference, AlertSubscription
 from .serializers import RegisterSerializer, SavedLocationSerializer, AlertSubscriptionSerializer
@@ -135,6 +137,49 @@ def alert_subscriptions(request):
 def delete_alert_subscription(request, pk: int):
     AlertSubscription.objects.filter(user=request.user, pk=pk).delete()
     return Response(status=204)
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def news(request):
+    if not settings.NEWS_API_KEY:
+        return Response({"detail": "NEWS_API_KEY is not configured"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    query = request.query_params.get("q") or settings.NEWS_QUERY
+    cache_key = f"news:{query}"
+    cached = cache.get(cache_key)
+    if cached:
+        return Response(cached)
+
+    try:
+        res = requests.get(
+            "https://newsapi.org/v2/everything",
+            params={
+                "q": query,
+                "pageSize": settings.NEWS_PAGE_SIZE,
+                "sortBy": "publishedAt",
+                "language": "en",
+                "apiKey": settings.NEWS_API_KEY,
+            },
+            timeout=10,
+        )
+        res.raise_for_status()
+        data = res.json()
+        articles = data.get("articles") or []
+        payload = {
+            "articles": [
+                {
+                    "title": a.get("title"),
+                    "url": a.get("url"),
+                    "source": (a.get("source") or {}).get("name"),
+                    "publishedAt": a.get("publishedAt"),
+                    "image": a.get("urlToImage"),
+                }
+                for a in articles
+            ]
+        }
+        cache.set(cache_key, payload, timeout=900)
+        return Response(payload)
+    except requests.RequestException:
+        return Response({"detail": "News request failed"}, status=status.HTTP_502_BAD_GATEWAY)
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
