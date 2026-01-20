@@ -120,6 +120,9 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
 ALERTS_FROM_EMAIL = os.getenv("ALERTS_FROM_EMAIL", "")
 ALERTS_MIN_INTERVAL_MINUTES = int(os.getenv("ALERTS_MIN_INTERVAL_MINUTES", "30"))
+NEWS_API_KEY = os.getenv("NEWS_API_KEY", "")
+NEWS_QUERY = os.getenv("NEWS_QUERY", "weather OR climate OR storm OR wildfire")
+NEWS_PAGE_SIZE = int(os.getenv("NEWS_PAGE_SIZE", "8"))
 
 # Redis Cache Configuration
 CACHES = {
